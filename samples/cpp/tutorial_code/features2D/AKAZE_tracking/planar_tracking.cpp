@@ -120,27 +120,27 @@ Mat Tracker::process(const Mat frame, Stats& stats)
 
 int main(int argc, char **argv)
 {
-    if(argc < 2) {
-        cerr << "Usage: " << endl
-             << "akaze_track input_path" << endl
-             << "  (input_path can be a camera id, like 0,1,2 or a video filename)" << endl;
-        return 1;
-    }
+    cerr << "Usage: " << endl
+         << "akaze_track input_path" << endl
+         << "  (input_path can be a camera id, like 0,1,2 or a video filename)" << endl;
 
-    std::string video_name = argv[1];
-    std::stringstream ssFormat;
-    ssFormat << atoi(argv[1]);
+    CommandLineParser parser(argc, argv, "{@input_path |0|input path can be a camera id, like 0,1,2 or a video filename}");
+    string input_path = parser.get<string>(0);
+    string video_name = input_path;
 
     VideoCapture video_in;
-    if (video_name.compare(ssFormat.str())==0) {    //test str==str(num)
-        video_in.open(atoi(argv[1]));
+
+    if ( ( isdigit(input_path[0]) && input_path.size() == 1 ) )
+    {
+    int camera_no = input_path[0] - '0';
+        video_in.open( camera_no );
     }
     else {
         video_in.open(video_name);
     }
 
     if(!video_in.isOpened()) {
-        cerr << "Couldn't open " << argv[1] << endl;
+        cerr << "Couldn't open " << video_name << endl;
         return 1;
     }
 
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
 
     cout << "Please select a bounding box, and press any key to continue." << endl;
     vector<Point2f> bb;
-    cv::Rect2d uBox = selectROI(video_name, frame);
+    cv::Rect uBox = cv::selectROI(video_name, frame);
     bb.push_back(cv::Point2f(static_cast<float>(uBox.x), static_cast<float>(uBox.y)));
     bb.push_back(cv::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y)));
     bb.push_back(cv::Point2f(static_cast<float>(uBox.x+uBox.width), static_cast<float>(uBox.y+uBox.height)));
