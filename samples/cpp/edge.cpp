@@ -1,5 +1,7 @@
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/utility.hpp"
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
 
 #include <stdio.h>
 
@@ -26,12 +28,12 @@ static void help()
 {
     printf("\nThis sample demonstrates Canny edge detection\n"
            "Call:\n"
-           "    /.edge [image_name -- Default is fruits.jpg]\n\n");
+           "    /.edge [image_name -- Default is ../data/fruits.jpg]\n\n");
 }
 
 const char* keys =
 {
-    "{1| |fruits.jpg|input image name}"
+    "{@image |../data/fruits.jpg|input image name}"
 };
 
 int main( int argc, const char** argv )
@@ -39,7 +41,7 @@ int main( int argc, const char** argv )
     help();
 
     CommandLineParser parser(argc, argv, keys);
-    string filename = parser.get<string>("1");
+    string filename = parser.get<string>(0);
 
     image = imread(filename, 1);
     if(image.empty())

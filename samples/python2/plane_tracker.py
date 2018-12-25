@@ -23,7 +23,11 @@ Select a textured planar object to track by drawing a box with a mouse.
 
 import numpy as np
 import cv2
+
+# built-in modules
 from collections import namedtuple
+
+# local modules
 import video
 import common
 
@@ -57,7 +61,7 @@ TrackedTarget = namedtuple('TrackedTarget', 'target, p0, p1, H, quad')
 
 class PlaneTracker:
     def __init__(self):
-        self.detector = cv2.ORB( nfeatures = 1000 )
+        self.detector = cv2.ORB_create( nfeatures = 1000 )
         self.matcher = cv2.FlannBasedMatcher(flann_params, {})  # bug : need to pass empty dict (#1329)
         self.targets = []
 
@@ -73,7 +77,7 @@ class PlaneTracker:
                 descs.append(desc)
         descs = np.uint8(descs)
         self.matcher.add([descs])
-        target = PlanarTarget(image = image, rect=rect, keypoints = points, descrs=descs, data=None)
+        target = PlanarTarget(image = image, rect=rect, keypoints = points, descrs=descs, data=data)
         self.targets.append(target)
 
     def clear(self):
@@ -83,10 +87,10 @@ class PlaneTracker:
 
     def track(self, frame):
         '''Returns a list of detected TrackedTarget objects'''
-        self.frame_points, self.frame_descrs = self.detect_features(frame)
-        if len(self.frame_points) < MIN_MATCH_COUNT:
+        frame_points, frame_descrs = self.detect_features(frame)
+        if len(frame_points) < MIN_MATCH_COUNT:
             return []
-        matches = self.matcher.knnMatch(self.frame_descrs, k = 2)
+        matches = self.matcher.knnMatch(frame_descrs, k = 2)
         matches = [m[0] for m in matches if len(m) == 2 and m[0].distance < m[1].distance * 0.75]
         if len(matches) < MIN_MATCH_COUNT:
             return []
@@ -99,7 +103,7 @@ class PlaneTracker:
                 continue
             target = self.targets[imgIdx]
             p0 = [target.keypoints[m.trainIdx].pt for m in matches]
-            p1 = [self.frame_points[m.queryIdx].pt for m in matches]
+            p1 = [frame_points[m.queryIdx].pt for m in matches]
             p0, p1 = np.float32((p0, p1))
             H, status = cv2.findHomography(p0, p1, cv2.RANSAC, 3.0)
             status = status.ravel() != 0
@@ -156,7 +160,7 @@ class App:
 
             self.rect_sel.draw(vis)
             cv2.imshow('plane', vis)
-            ch = cv2.waitKey(1)
+            ch = cv2.waitKey(1) & 0xFF
             if ch == ord(' '):
                 self.paused = not self.paused
             if ch == ord('c'):
@@ -168,6 +172,8 @@ if __name__ == '__main__':
     print __doc__
 
     import sys
-    try: video_src = sys.argv[1]
-    except: video_src = 0
+    try:
+        video_src = sys.argv[1]
+    except:
+        video_src = 0
     App(video_src).run()

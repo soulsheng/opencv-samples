@@ -71,7 +71,7 @@ class App:
 
             self.rect_sel.draw(vis)
             cv2.imshow('plane', vis)
-            ch = cv2.waitKey(1)
+            ch = cv2.waitKey(1) & 0xFF
             if ch == ord(' '):
                 self.paused = not self.paused
             if ch == ord('c'):
@@ -100,6 +100,8 @@ if __name__ == '__main__':
     print __doc__
 
     import sys
-    try: video_src = sys.argv[1]
-    except: video_src = 0
+    try:
+        video_src = sys.argv[1]
+    except:
+        video_src = 0
     App(video_src).run()

@@ -1,3 +1,4 @@
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/photo/photo.hpp"
@@ -13,7 +14,7 @@ static void help()
             << "with surrounding image areas.\n"
             "Using OpenCV version %s\n" << CV_VERSION << "\n"
     "Usage:\n"
-        "./inpaint [image_name -- Default fruits.jpg]\n" << endl;
+        "./inpaint [image_name -- Default ../data/fruits.jpg]\n" << endl;
 
     cout << "Hot keys: \n"
         "\tESC - quit the program\n"
@@ -27,11 +28,11 @@ Point prevPt(-1,-1);
 
 static void onMouse( int event, int x, int y, int flags, void* )
 {
-    if( event == CV_EVENT_LBUTTONUP || !(flags & CV_EVENT_FLAG_LBUTTON) )
+    if( event == EVENT_LBUTTONUP || !(flags & EVENT_FLAG_LBUTTON) )
         prevPt = Point(-1,-1);
-    else if( event == CV_EVENT_LBUTTONDOWN )
+    else if( event == EVENT_LBUTTONDOWN )
         prevPt = Point(x,y);
-    else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
+    else if( event == EVENT_MOUSEMOVE && (flags & EVENT_FLAG_LBUTTON) )
     {
         Point pt(x,y);
         if( prevPt.x < 0 )
@@ -46,7 +47,7 @@ static void onMouse( int event, int x, int y, int flags, void* )
 
 int main( int argc, char** argv )
 {
-    char* filename = argc >= 2 ? argv[1] : (char*)"fruits.jpg";
+    char* filename = argc >= 2 ? argv[1] : (char*)"../data/fruits.jpg";
     Mat img0 = imread(filename, -1);
     if(img0.empty())
     {
@@ -81,7 +82,7 @@ int main( int argc, char** argv )
         if( c == 'i' || c == ' ' )
         {
             Mat inpainted;
-            inpaint(img, inpaintMask, inpainted, 3, CV_INPAINT_TELEA);
+            inpaint(img, inpaintMask, inpainted, 3, INPAINT_TELEA);
             imshow("inpainted image", inpainted);
         }
     }

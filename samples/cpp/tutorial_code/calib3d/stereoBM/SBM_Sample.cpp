@@ -8,6 +8,7 @@
 #include <iostream>
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/core/core.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 using namespace cv;
@@ -26,25 +27,23 @@ int main( int argc, char** argv )
   { readme(); return -1; }
 
   //-- 1. Read the images
-  Mat imgLeft = imread( argv[1], CV_LOAD_IMAGE_GRAYSCALE );
-  Mat imgRight = imread( argv[2], CV_LOAD_IMAGE_GRAYSCALE );
+  Mat imgLeft = imread( argv[1], IMREAD_GRAYSCALE );
+  Mat imgRight = imread( argv[2], IMREAD_GRAYSCALE );
   //-- And create the image in which we will save our disparities
   Mat imgDisparity16S = Mat( imgLeft.rows, imgLeft.cols, CV_16S );
   Mat imgDisparity8U = Mat( imgLeft.rows, imgLeft.cols, CV_8UC1 );
 
-  if( !imgLeft.data || !imgRight.data )
+  if( imgLeft.empty() || imgRight.empty() )
   { std::cout<< " --(!) Error reading images " << std::endl; return -1; }
 
   //-- 2. Call the constructor for StereoBM
   int ndisparities = 16*5;   /**< Range of disparity */
   int SADWindowSize = 21; /**< Size of the block window. Must be odd */
 
-  StereoBM sbm( StereoBM::BASIC_PRESET,
-                                ndisparities,
-                SADWindowSize );
+  Ptr<StereoBM> sbm = StereoBM::create( ndisparities, SADWindowSize );
 
   //-- 3. Calculate the disparity image
-  sbm( imgLeft, imgRight, imgDisparity16S, CV_16S );
+  sbm->compute( imgLeft, imgRight, imgDisparity16S );
 
   //-- Check its extreme values
   double minVal; double maxVal;

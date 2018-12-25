@@ -168,7 +168,7 @@ class App:
             self.rect_sel.draw(vis)
 
             cv2.imshow('frame', vis)
-            ch = cv2.waitKey(10)
+            ch = cv2.waitKey(10) & 0xFF
             if ch == 27:
                 break
             if ch == ord(' '):
@@ -182,7 +182,9 @@ if __name__ == '__main__':
     import sys, getopt
     opts, args = getopt.getopt(sys.argv[1:], '', ['pause'])
     opts = dict(opts)
-    try: video_src = args[0]
-    except: video_src = '0'
+    try:
+        video_src = args[0]
+    except:
+        video_src = '0'
 
     App(video_src, paused = '--pause' in opts).run()

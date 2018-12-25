@@ -1,16 +1,17 @@
 #include <iostream>
 #include <vector>
 
-#include "cvconfig.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/video/video.hpp"
-#include "opencv2/gpu/gpu.hpp"
+#include "opencv2/core.hpp"
+#include <opencv2/core/utility.hpp>
+#include "opencv2/imgproc.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/video.hpp"
+#include "opencv2/cudaoptflow.hpp"
+#include "opencv2/cudaimgproc.hpp"
 
 using namespace std;
 using namespace cv;
-using namespace cv::gpu;
+using namespace cv::cuda;
 
 static void download(const GpuMat& d_mat, vector<Point2f>& vec)
 {
@@ -76,64 +77,25 @@ template <typename T> inline T mapValue(T x, T a, T b, T c, T d)
     return c + (d - c) * (x - a) / (b - a);
 }
 
-static void getFlowField(const Mat& u, const Mat& v, Mat& flowField)
-{
-    float maxDisplacement = 1.0f;
-
-    for (int i = 0; i < u.rows; ++i)
-    {
-        const float* ptr_u = u.ptr<float>(i);
-        const float* ptr_v = v.ptr<float>(i);
-
-        for (int j = 0; j < u.cols; ++j)
-        {
-            float d = max(fabsf(ptr_u[j]), fabsf(ptr_v[j]));
-
-            if (d > maxDisplacement)
-                maxDisplacement = d;
-        }
-    }
-
-    flowField.create(u.size(), CV_8UC4);
-
-    for (int i = 0; i < flowField.rows; ++i)
-    {
-        const float* ptr_u = u.ptr<float>(i);
-        const float* ptr_v = v.ptr<float>(i);
-
-
-        Vec4b* row = flowField.ptr<Vec4b>(i);
-
-        for (int j = 0; j < flowField.cols; ++j)
-        {
-            row[j][0] = 0;
-            row[j][1] = static_cast<unsigned char> (mapValue (-ptr_v[j], -maxDisplacement, maxDisplacement, 0.0f, 255.0f));
-            row[j][2] = static_cast<unsigned char> (mapValue ( ptr_u[j], -maxDisplacement, maxDisplacement, 0.0f, 255.0f));
-            row[j][3] = 255;
-        }
-    }
-}
-
 int main(int argc, const char* argv[])
 {
     const char* keys =
-        "{ h            | help           | false | print help message }"
-        "{ l            | left           |       | specify left image }"
-        "{ r            | right          |       | specify right image }"
-        "{ gray         | gray           | false | use grayscale sources [PyrLK Sparse] }"
-        "{ win_size     | win_size       | 21    | specify windows size [PyrLK] }"
-        "{ max_level    | max_level      | 3     | specify max level [PyrLK] }"
-        "{ iters        | iters          | 30    | specify iterations count [PyrLK] }"
-        "{ points       | points         | 4000  | specify points count [GoodFeatureToTrack] }"
-        "{ min_dist     | min_dist       | 0     | specify minimal distance between points [GoodFeatureToTrack] }";
+        "{ h             help   |       | print help message }"
+        "{ l             left   | ../data/pic1.png       | specify left image }"
+        "{ r             right  | ../data/pic2.png       | specify right image }"
+        "{ gray                 |       | use grayscale sources [PyrLK Sparse] }"
+        "{ win_size             | 21    | specify windows size [PyrLK] }"
+        "{ max_level            | 3     | specify max level [PyrLK] }"
+        "{ iters                | 30    | specify iterations count [PyrLK] }"
+        "{ points               | 4000  | specify points count [GoodFeatureToTrack] }"
+        "{ min_dist             | 0     | specify minimal distance between points [GoodFeatureToTrack] }";
 
     CommandLineParser cmd(argc, argv, keys);
 
-    if (cmd.get<bool>("help"))
+    if (cmd.has("help") || !cmd.check())
     {
-        cout << "Usage: pyrlk_optical_flow [options]" << endl;
-        cout << "Avaible options:" << endl;
-        cmd.printParams();
+        cmd.printMessage();
+        cmd.printErrors();
         return 0;
     }
 
@@ -146,7 +108,7 @@ int main(int argc, const char* argv[])
         return -1;
     }
 
-    bool useGray = cmd.get<bool>("gray");
+    bool useGray = cmd.has("gray");
     int winSize = cmd.get<int>("win_size");
     int maxLevel = cmd.get<int>("max_level");
     int iters = cmd.get<int>("iters");
@@ -171,27 +133,23 @@ int main(int argc, const char* argv[])
     cout << endl;
 
     Mat frame0Gray;
-    cvtColor(frame0, frame0Gray, COLOR_BGR2GRAY);
+    cv::cvtColor(frame0, frame0Gray, COLOR_BGR2GRAY);
     Mat frame1Gray;
-    cvtColor(frame1, frame1Gray, COLOR_BGR2GRAY);
+    cv::cvtColor(frame1, frame1Gray, COLOR_BGR2GRAY);
 
     // goodFeaturesToTrack
-
-    GoodFeaturesToTrackDetector_GPU detector(points, 0.01, minDist);
 
     GpuMat d_frame0Gray(frame0Gray);
     GpuMat d_prevPts;
 
-    detector(d_frame0Gray, d_prevPts);
+    Ptr<cuda::CornersDetector> detector = cuda::createGoodFeaturesToTrackDetector(d_frame0Gray.type(), points, 0.01, minDist);
+
+    detector->detect(d_frame0Gray, d_prevPts);
 
     // Sparse
 
-    PyrLKOpticalFlow d_pyrLK;
-
-    d_pyrLK.winSize.width = winSize;
-    d_pyrLK.winSize.height = winSize;
-    d_pyrLK.maxLevel = maxLevel;
-    d_pyrLK.iters = iters;
+    Ptr<cuda::SparsePyrLKOpticalFlow> d_pyrLK = cuda::SparsePyrLKOpticalFlow::create(
+                Size(winSize, winSize), maxLevel, iters);
 
     GpuMat d_frame0(frame0);
     GpuMat d_frame1(frame1);
@@ -199,7 +157,7 @@ int main(int argc, const char* argv[])
     GpuMat d_nextPts;
     GpuMat d_status;
 
-    d_pyrLK.sparse(useGray ? d_frame0Gray : d_frame0, useGray ? d_frame1Gray : d_frame1, d_prevPts, d_nextPts, d_status);
+    d_pyrLK->calc(useGray ? d_frame0Gray : d_frame0, useGray ? d_frame1Gray : d_frame1, d_prevPts, d_nextPts, d_status);
 
     // Draw arrows
 
@@ -215,20 +173,6 @@ int main(int argc, const char* argv[])
     drawArrows(frame0, prevPts, nextPts, status, Scalar(255, 0, 0));
 
     imshow("PyrLK [Sparse]", frame0);
-
-    // Dense
-
-    GpuMat d_u;
-    GpuMat d_v;
-
-    d_pyrLK.dense(d_frame0Gray, d_frame1Gray, d_u, d_v);
-
-    // Draw flow field
-
-    Mat flowField;
-    getFlowField(Mat(d_u), Mat(d_v), flowField);
-
-    imshow("PyrLK [Dense] Flow Field", flowField);
 
     waitKey();
 

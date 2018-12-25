@@ -1,6 +1,8 @@
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/core/utility.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <iostream>
 
 using namespace std;
@@ -12,7 +14,7 @@ static void help(char* progName)
         <<  "This program shows how to filter images with mask: the write it yourself and the"
         << "filter2d way. " << endl
         <<  "Usage:"                                                                        << endl
-        << progName << " [image_name -- default lena.jpg] [G -- grayscale] "        << endl << endl;
+        << progName << " [image_name -- default ../data/lena.jpg] [G -- grayscale] "        << endl << endl;
 }
 
 
@@ -21,14 +23,14 @@ void Sharpen(const Mat& myImage,Mat& Result);
 int main( int argc, char* argv[])
 {
     help(argv[0]);
-    const char* filename = argc >=2 ? argv[1] : "lena.jpg";
+    const char* filename = argc >=2 ? argv[1] : "../data/lena.jpg";
 
     Mat I, J, K;
 
     if (argc >= 3 && !strcmp("G", argv[2]))
-        I = imread( filename, CV_LOAD_IMAGE_GRAYSCALE);
+        I = imread( filename, IMREAD_GRAYSCALE);
     else
-        I = imread( filename, CV_LOAD_IMAGE_COLOR);
+        I = imread( filename, IMREAD_COLOR);
 
     namedWindow("Input", WINDOW_AUTOSIZE);
     namedWindow("Output", WINDOW_AUTOSIZE);

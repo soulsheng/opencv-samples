@@ -4,6 +4,7 @@
  * @author Ana Huaman
  */
 
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
@@ -47,7 +48,7 @@ int main( int, char** argv )
 
     /// Update map_x & map_y. Then apply remap
     update_map();
-    remap( src, dst, map_x, map_y, CV_INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0) );
+    remap( src, dst, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0) );
 
     // Display results
     imshow( remap_window, dst );

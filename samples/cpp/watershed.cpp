@@ -1,5 +1,7 @@
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/utility.hpp>
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -11,7 +13,7 @@ static void help()
 {
     cout << "\nThis program demonstrates the famous watershed segmentation algorithm in OpenCV: watershed()\n"
             "Usage:\n"
-            "./watershed [image_name -- default is fruits.jpg]\n" << endl;
+            "./watershed [image_name -- default is ../data/fruits.jpg]\n" << endl;
 
 
     cout << "Hot keys: \n"
@@ -28,11 +30,11 @@ static void onMouse( int event, int x, int y, int flags, void* )
 {
     if( x < 0 || x >= img.cols || y < 0 || y >= img.rows )
         return;
-    if( event == CV_EVENT_LBUTTONUP || !(flags & CV_EVENT_FLAG_LBUTTON) )
+    if( event == EVENT_LBUTTONUP || !(flags & EVENT_FLAG_LBUTTON) )
         prevPt = Point(-1,-1);
-    else if( event == CV_EVENT_LBUTTONDOWN )
+    else if( event == EVENT_LBUTTONDOWN )
         prevPt = Point(x,y);
-    else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
+    else if( event == EVENT_MOUSEMOVE && (flags & EVENT_FLAG_LBUTTON) )
     {
         Point pt(x, y);
         if( prevPt.x < 0 )
@@ -46,7 +48,7 @@ static void onMouse( int event, int x, int y, int flags, void* )
 
 int main( int argc, char** argv )
 {
-    char* filename = argc >= 2 ? argv[1] : (char*)"fruits.jpg";
+    char* filename = argc >= 2 ? argv[1] : (char*)"../data/fruits.jpg";
     Mat img0 = imread(filename, 1), imgGray;
 
     if( img0.empty() )
@@ -84,7 +86,7 @@ int main( int argc, char** argv )
             vector<vector<Point> > contours;
             vector<Vec4i> hierarchy;
 
-            findContours(markerMask, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE);
+            findContours(markerMask, contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE);
 
             if( contours.empty() )
                 continue;

@@ -3,13 +3,15 @@
 '''
 Feature-based image matching sample.
 
+Note, that you will need the https://github.com/Itseez/opencv_contrib repo for SIFT and SURF
+
 USAGE
-  find_obj.py [--feature=<sift|surf|orb>[-flann]] [ <image1> <image2> ]
+  find_obj.py [--feature=<sift|surf|orb|akaze|brisk>[-flann]] [ <image1> <image2> ]
 
-  --feature  - Feature to use. Can be sift, surf of orb. Append '-flann' to feature name
-                to use Flann-based matcher instead bruteforce.
+  --feature  - Feature to use. Can be sift, surf, orb or brisk. Append '-flann'
+               to feature name to use Flann-based matcher instead bruteforce.
 
-  Press left mouse button on a feature point to see its mathcing point.
+  Press left mouse button on a feature point to see its matching point.
 '''
 
 import numpy as np
@@ -23,13 +25,19 @@ FLANN_INDEX_LSH    = 6
 def init_feature(name):
     chunks = name.split('-')
     if chunks[0] == 'sift':
-        detector = cv2.SIFT()
+        detector = cv2.xfeatures2d.SIFT_create()
         norm = cv2.NORM_L2
     elif chunks[0] == 'surf':
-        detector = cv2.SURF(800)
+        detector = cv2.xfeatures2d.SURF_create(800)
         norm = cv2.NORM_L2
     elif chunks[0] == 'orb':
-        detector = cv2.ORB(400)
+        detector = cv2.ORB_create(400)
+        norm = cv2.NORM_HAMMING
+    elif chunks[0] == 'akaze':
+        detector = cv2.AKAZE_create()
+        norm = cv2.NORM_HAMMING
+    elif chunks[0] == 'brisk':
+        detector = cv2.BRISK_create()
         norm = cv2.NORM_HAMMING
     else:
         return None, None
@@ -130,20 +138,29 @@ if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], '', ['feature='])
     opts = dict(opts)
     feature_name = opts.get('--feature', 'sift')
-    try: fn1, fn2 = args
+    try:
+        fn1, fn2 = args
     except:
-        fn1 = '../c/box.png'
-        fn2 = '../c/box_in_scene.png'
+        fn1 = '../data/box.png'
+        fn2 = '../data/box_in_scene.png'
 
     img1 = cv2.imread(fn1, 0)
     img2 = cv2.imread(fn2, 0)
     detector, matcher = init_feature(feature_name)
-    if detector != None:
-        print 'using', feature_name
-    else:
+
+    if img1 is None:
+        print 'Failed to load fn1:', fn1
+        sys.exit(1)
+
+    if img2 is None:
+        print 'Failed to load fn2:', fn2
+        sys.exit(1)
+
+    if detector is None:
         print 'unknown feature:', feature_name
         sys.exit(1)
 
+    print 'using', feature_name
 
     kp1, desc1 = detector.detectAndCompute(img1, None)
     kp2, desc2 = detector.detectAndCompute(img2, None)

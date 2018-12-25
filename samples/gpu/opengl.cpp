@@ -14,6 +14,9 @@ int main()
     #define NOMINMAX 1
     #include <windows.h>
 #endif
+#if defined(_WIN64)
+    #include <windows.h>
+#endif
 
 #if defined(__APPLE__)
     #include <OpenGL/gl.h>
@@ -24,13 +27,13 @@ int main()
 #endif
 
 #include "opencv2/core/core.hpp"
-#include "opencv2/core/opengl_interop.hpp"
-#include "opencv2/core/gpumat.hpp"
+#include "opencv2/core/opengl.hpp"
+#include "opencv2/core/cuda.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 using namespace std;
 using namespace cv;
-using namespace cv::gpu;
+using namespace cv::cuda;
 
 const int win_width = 800;
 const int win_height = 640;
@@ -55,16 +58,19 @@ void draw(void* userdata)
 
 int main(int argc, char* argv[])
 {
+    string filename;
     if (argc < 2)
     {
         cout << "Usage: " << argv[0] << " image" << endl;
-        return -1;
+        filename = "../data/lena.jpg";
     }
+    else
+        filename = argv[1];
 
-    Mat img = imread(argv[1]);
+    Mat img = imread(filename);
     if (img.empty())
     {
-        cerr << "Can't open image " << argv[1] << endl;
+        cerr << "Can't open image " << filename << endl;
         return -1;
     }
 

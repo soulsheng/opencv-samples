@@ -4,10 +4,12 @@
  * @author OpenCV team
  */
 
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include <iostream>
 
+using namespace std;
 using namespace cv;
 
 namespace
@@ -29,7 +31,7 @@ namespace
         // will hold the results of the detection
         std::vector<Vec3f> circles;
         // runs the actual detection
-        HoughCircles( src_gray, circles, CV_HOUGH_GRADIENT, 1, src_gray.rows/8, cannyThreshold, accumulatorThreshold, 0, 0 );
+        HoughCircles( src_gray, circles, HOUGH_GRADIENT, 1, src_gray.rows/8, cannyThreshold, accumulatorThreshold, 0, 0 );
 
         // clone the colour, input image for displaying purposes
         Mat display = src_display.clone();
@@ -63,7 +65,7 @@ int main(int argc, char** argv)
     // Read the image
     src = imread( argv[1], 1 );
 
-    if( !src.data )
+    if( src.empty() )
     {
         std::cerr<<"Invalid input image\n";
         std::cout<<usage;

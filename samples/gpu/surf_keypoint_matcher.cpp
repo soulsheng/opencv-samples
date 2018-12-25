@@ -2,21 +2,21 @@
 
 #include "opencv2/opencv_modules.hpp"
 
-#ifdef HAVE_OPENCV_NONFREE
+#ifdef HAVE_OPENCV_XFEATURES2D
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "opencv2/gpu/gpu.hpp"
-#include "opencv2/nonfree/gpu.hpp"
+#include "opencv2/cudafeatures2d.hpp"
+#include "opencv2/xfeatures2d/cuda.hpp"
 
 using namespace std;
 using namespace cv;
-using namespace cv::gpu;
+using namespace cv::cuda;
 
 static void help()
 {
-    cout << "\nThis program demonstrates using SURF_GPU features detector, descriptor extractor and BruteForceMatcher_GPU" << endl;
+    cout << "\nThis program demonstrates using SURF_CUDA features detector, descriptor extractor and BruteForceMatcher_CUDA" << endl;
     cout << "\nUsage:\n\tmatcher_simple_gpu --left <image1> --right <image2>" << endl;
 }
 
@@ -33,12 +33,12 @@ int main(int argc, char* argv[])
     {
         if (string(argv[i]) == "--left")
         {
-            img1.upload(imread(argv[++i], CV_LOAD_IMAGE_GRAYSCALE));
+            img1.upload(imread(argv[++i], IMREAD_GRAYSCALE));
             CV_Assert(!img1.empty());
         }
         else if (string(argv[i]) == "--right")
         {
-            img2.upload(imread(argv[++i], CV_LOAD_IMAGE_GRAYSCALE));
+            img2.upload(imread(argv[++i], IMREAD_GRAYSCALE));
             CV_Assert(!img2.empty());
         }
         else if (string(argv[i]) == "--help")
@@ -48,9 +48,9 @@ int main(int argc, char* argv[])
         }
     }
 
-    cv::gpu::printShortCudaDeviceInfo(cv::gpu::getDevice());
+    cv::cuda::printShortCudaDeviceInfo(cv::cuda::getDevice());
 
-    SURF_GPU surf;
+    SURF_CUDA surf;
 
     // detecting keypoints & computing descriptors
     GpuMat keypoints1GPU, keypoints2GPU;
@@ -62,19 +62,17 @@ int main(int argc, char* argv[])
     cout << "FOUND " << keypoints2GPU.cols << " keypoints on second image" << endl;
 
     // matching descriptors
-    BFMatcher_GPU matcher(NORM_L2);
-    GpuMat trainIdx, distance;
-    matcher.matchSingle(descriptors1GPU, descriptors2GPU, trainIdx, distance);
+    Ptr<cv::cuda::DescriptorMatcher> matcher = cv::cuda::DescriptorMatcher::createBFMatcher(surf.defaultNorm());
+    vector<DMatch> matches;
+    matcher->match(descriptors1GPU, descriptors2GPU, matches);
 
     // downloading results
     vector<KeyPoint> keypoints1, keypoints2;
     vector<float> descriptors1, descriptors2;
-    vector<DMatch> matches;
     surf.downloadKeypoints(keypoints1GPU, keypoints1);
     surf.downloadKeypoints(keypoints2GPU, keypoints2);
     surf.downloadDescriptors(descriptors1GPU, descriptors1);
     surf.downloadDescriptors(descriptors2GPU, descriptors2);
-    BFMatcher_GPU::matchDownload(trainIdx, distance, matches);
 
     // drawing the results
     Mat img_matches;
@@ -91,7 +89,7 @@ int main(int argc, char* argv[])
 
 int main()
 {
-    std::cerr << "OpenCV was built without nonfree module" << std::endl;
+    std::cerr << "OpenCV was built without xfeatures2d module" << std::endl;
     return 0;
 }
 

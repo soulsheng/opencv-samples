@@ -4,6 +4,7 @@
 
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgcodecs/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 #include <stdio.h>
@@ -81,14 +82,14 @@ static bool run3Calibration( vector<vector<Point2f> > imagePoints1,
         objpt.resize(imgpt.size(),objpt[0]);
 
         Mat cameraMatrix = Mat::eye(3, 3, CV_64F);
-        if( flags & CV_CALIB_FIX_ASPECT_RATIO )
+        if( flags & CALIB_FIX_ASPECT_RATIO )
             cameraMatrix.at<double>(0,0) = aspectRatio;
 
         Mat distCoeffs = Mat::zeros(5, 1, CV_64F);
 
         double err = calibrateCamera(objpt, imgpt, imageSize, cameraMatrix,
                         distCoeffs, rvecs, tvecs,
-                        flags|CV_CALIB_FIX_K3/*|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5|CV_CALIB_FIX_K6*/);
+                        flags|CALIB_FIX_K3/*|CALIB_FIX_K4|CALIB_FIX_K5|CALIB_FIX_K6*/);
         bool ok = checkRange(cameraMatrix) && checkRange(distCoeffs);
         if(!ok)
         {
@@ -137,8 +138,8 @@ static bool run3Calibration( vector<vector<Point2f> > imagePoints1,
         double err = stereoCalibrate(objpt, imgpt, imgpt_right, cameraMatrix1, distCoeffs1,
                                      cameraMatrix, distCoeffs,
                                      imageSize, R, T, E, F,
-                                     TermCriteria(TermCriteria::COUNT, 30, 0),
-                                     CV_CALIB_FIX_INTRINSIC);
+                                     CALIB_FIX_INTRINSIC,
+                                     TermCriteria(TermCriteria::COUNT, 30, 0));
         printf("Pair (1,%d) calibration reprojection error = %g\n", c, sqrt(err/(N*2)));
         if( c == 2 )
         {
@@ -212,15 +213,15 @@ int main( int argc, char** argv )
         {
             if( sscanf( argv[++i], "%f", &aspectRatio ) != 1 || aspectRatio <= 0 )
                 return printf("Invalid aspect ratio\n" ), -1;
-            flags |= CV_CALIB_FIX_ASPECT_RATIO;
+            flags |= CALIB_FIX_ASPECT_RATIO;
         }
         else if( strcmp( s, "-zt" ) == 0 )
         {
-            flags |= CV_CALIB_ZERO_TANGENT_DIST;
+            flags |= CALIB_ZERO_TANGENT_DIST;
         }
         else if( strcmp( s, "-p" ) == 0 )
         {
-            flags |= CV_CALIB_FIX_PRINCIPAL_POINT;
+            flags |= CALIB_FIX_PRINCIPAL_POINT;
         }
         else if( strcmp( s, "-o" ) == 0 )
         {
@@ -267,12 +268,12 @@ int main( int argc, char** argv )
             printf("%s\n", imageList[i*3+k].c_str());
             view = imread(imageList[i*3+k], 1);
 
-            if(view.data)
+            if(!view.empty())
             {
                 vector<Point2f> ptvec;
                 imageSize = view.size();
                 cvtColor(view, viewGray, COLOR_BGR2GRAY);
-                bool found = findChessboardCorners( view, boardSize, ptvec, CV_CALIB_CB_ADAPTIVE_THRESH );
+                bool found = findChessboardCorners( view, boardSize, ptvec, CALIB_CB_ADAPTIVE_THRESH );
 
                 drawChessboardCorners( view, boardSize, Mat(ptvec), found );
                 if( found )
@@ -291,13 +292,13 @@ int main( int argc, char** argv )
     printf("Running calibration ...\n");
 
     run3Calibration(imgpt[0], imgpt[1], imgpt[2], imageSize,
-                    boardSize, squareSize, aspectRatio, flags|CV_CALIB_FIX_K4|CV_CALIB_FIX_K5,
+                    boardSize, squareSize, aspectRatio, flags|CALIB_FIX_K4|CALIB_FIX_K5,
                     cameraMatrix[0], distCoeffs[0],
                     cameraMatrix[1], distCoeffs[1],
                     cameraMatrix[2], distCoeffs[2],
                     R12, T12, R13, T13);
 
-    fs.open(outputFilename, CV_STORAGE_WRITE);
+    fs.open(outputFilename, FileStorage::WRITE);
 
     fs << "cameraMatrix1" << cameraMatrix[0];
     fs << "cameraMatrix2" << cameraMatrix[1];
@@ -323,7 +324,7 @@ int main( int argc, char** argv )
              imgpt[0], imgpt[2],
              imageSize, R12, T12, R13, T13,
              R[0], R[1], R[2], P[0], P[1], P[2], Q, -1.,
-             imageSize, 0, 0, CV_CALIB_ZERO_DISPARITY);
+             imageSize, 0, 0, CALIB_ZERO_DISPARITY);
     Mat map1[3], map2[3];
 
     fs << "R1" << R[0];
@@ -355,11 +356,11 @@ int main( int argc, char** argv )
             int k2 = k == 0 ? 1 : k == 1 ? 0 : 2;
             view = imread(imageList[i*3+k], 1);
 
-            if(!view.data)
+            if(view.empty())
                 continue;
 
             Mat rview = canvas.colRange(k2*imageSize.width, (k2+1)*imageSize.width);
-            remap(view, rview, map1[k1], map2[k1], CV_INTER_LINEAR);
+            remap(view, rview, map1[k1], map2[k1], INTER_LINEAR);
         }
         printf("%s %s %s\n", imageList[i*3].c_str(), imageList[i*3+1].c_str(), imageList[i*3+2].c_str());
         resize( canvas, small_canvas, Size(1500, 1500/3) );

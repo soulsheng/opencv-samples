@@ -5,6 +5,7 @@
  */
 
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
 #include <iostream>
@@ -52,7 +53,7 @@ int main( int, char** argv )
  */
 void pickPoint (int event, int x, int y, int, void* )
 {
-  if( event != CV_EVENT_LBUTTONDOWN )
+  if( event != EVENT_LBUTTONDOWN )
     { return; }
 
   // Fill and get the mask

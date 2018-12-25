@@ -1,9 +1,11 @@
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/videoio/videoio.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/video/background_segm.hpp"
 #include <stdio.h>
 #include <string>
 
+using namespace std;
 using namespace cv;
 
 static void help()
@@ -29,7 +31,7 @@ static void refineSegments(const Mat& img, Mat& mask, Mat& dst)
     erode(temp, temp, Mat(), Point(-1,-1), niters*2);
     dilate(temp, temp, Mat(), Point(-1,-1), niters);
 
-    findContours( temp, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+    findContours( temp, contours, hierarchy, RETR_CCOMP, CHAIN_APPROX_SIMPLE );
 
     dst = Mat::zeros(img.size(), CV_8UC3);
 
@@ -52,7 +54,7 @@ static void refineSegments(const Mat& img, Mat& mask, Mat& dst)
         }
     }
     Scalar color( 0, 0, 255 );
-    drawContours( dst, contours, largestComp, color, CV_FILLED, 8, hierarchy );
+    drawContours( dst, contours, largestComp, color, FILLED, LINE_8, hierarchy );
 }
 
 
@@ -77,7 +79,7 @@ int main(int argc, char** argv)
     Mat tmp_frame, bgmask, out_frame;
 
     cap >> tmp_frame;
-    if(!tmp_frame.data)
+    if(tmp_frame.empty())
     {
         printf("can not read data from the video source\n");
         return -1;
@@ -86,15 +88,15 @@ int main(int argc, char** argv)
     namedWindow("video", 1);
     namedWindow("segmented", 1);
 
-    BackgroundSubtractorMOG bgsubtractor;
-    bgsubtractor.set("noiseSigma", 10);
+    Ptr<BackgroundSubtractorMOG2> bgsubtractor=createBackgroundSubtractorMOG2();
+    bgsubtractor->setVarThreshold(10);
 
     for(;;)
     {
         cap >> tmp_frame;
-        if( !tmp_frame.data )
+        if( tmp_frame.empty() )
             break;
-        bgsubtractor(tmp_frame, bgmask, update_bg_model ? -1 : 0);
+        bgsubtractor->apply(tmp_frame, bgmask, update_bg_model ? -1 : 0);
         refineSegments(tmp_frame, bgmask, out_frame);
         imshow("video", tmp_frame);
         imshow("segmented", out_frame);

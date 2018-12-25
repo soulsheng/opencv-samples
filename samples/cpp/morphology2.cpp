@@ -1,6 +1,5 @@
-#define CV_NO_BACKWARD_COMPATIBILITY
-
 #include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,7 +11,7 @@ static void help()
 
 printf("\nShow off image morphology: erosion, dialation, open and close\n"
     "Call:\n   morphology2 [image]\n"
-    "This program also shows use of rect, elipse and cross kernels\n\n");
+    "This program also shows use of rect, ellipse and cross kernels\n\n");
 printf( "Hot keys: \n"
     "\tESC - quit the program\n"
     "\tr - use rectangle structuring element\n"
@@ -37,9 +36,9 @@ static void OpenClose(int, void*)
     int an = n > 0 ? n : -n;
     Mat element = getStructuringElement(element_shape, Size(an*2+1, an*2+1), Point(an, an) );
     if( n < 0 )
-        morphologyEx(src, dst, CV_MOP_OPEN, element);
+        morphologyEx(src, dst, MORPH_OPEN, element);
     else
-        morphologyEx(src, dst, CV_MOP_CLOSE, element);
+        morphologyEx(src, dst, MORPH_CLOSE, element);
     imshow("Open/Close",dst);
 }
 
@@ -59,8 +58,8 @@ static void ErodeDilate(int, void*)
 
 int main( int argc, char** argv )
 {
-    char* filename = argc == 2 ? argv[1] : (char*)"baboon.jpg";
-    if( (src = imread(filename,1)).data == 0 )
+    char* filename = argc == 2 ? argv[1] : (char*)"../data/baboon.jpg";
+    if( (src = imread(filename,1)).empty() )
         return -1;
 
     help();

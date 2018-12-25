@@ -1,5 +1,7 @@
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/core/utility.hpp>
+#include "opencv2/imgproc.hpp"
+#include "opencv2/imgcodecs.hpp"
+#include "opencv2/highgui.hpp"
 #include <iostream>
 
 using namespace cv;
@@ -11,25 +13,21 @@ int threshval = 100;
 static void on_trackbar(int, void*)
 {
     Mat bw = threshval < 128 ? (img < threshval) : (img > threshval);
-
-    vector<vector<Point> > contours;
-    vector<Vec4i> hierarchy;
-
-    findContours( bw, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
-
-    Mat dst = Mat::zeros(img.size(), CV_8UC3);
-
-    if( !contours.empty() && !hierarchy.empty() )
-    {
-        // iterate through all the top-level contours,
-        // draw each connected component with its own random color
-        int idx = 0;
-        for( ; idx >= 0; idx = hierarchy[idx][0] )
-        {
-            Scalar color( (rand()&255), (rand()&255), (rand()&255) );
-            drawContours( dst, contours, idx, color, CV_FILLED, 8, hierarchy );
-        }
+    Mat labelImage(img.size(), CV_32S);
+    int nLabels = connectedComponents(bw, labelImage, 8);
+    std::vector<Vec3b> colors(nLabels);
+    colors[0] = Vec3b(0, 0, 0);//background
+    for(int label = 1; label < nLabels; ++label){
+        colors[label] = Vec3b( (rand()&255), (rand()&255), (rand()&255) );
     }
+    Mat dst(img.size(), CV_8UC3);
+    for(int r = 0; r < dst.rows; ++r){
+        for(int c = 0; c < dst.cols; ++c){
+            int label = labelImage.at<int>(r, c);
+            Vec3b &pixel = dst.at<Vec3b>(r, c);
+            pixel = colors[label];
+         }
+     }
 
     imshow( "Connected Components", dst );
 }
@@ -38,21 +36,21 @@ static void help()
 {
     cout << "\n This program demonstrates connected components and use of the trackbar\n"
              "Usage: \n"
-             "  ./connected_components <image(stuff.jpg as default)>\n"
+             "  ./connected_components <image(../data/stuff.jpg as default)>\n"
              "The image is converted to grayscale and displayed, another image has a trackbar\n"
              "that controls thresholding and thereby the extracted contours which are drawn in color\n";
 }
 
 const char* keys =
 {
-    "{1| |stuff.jpg|image for converting to a grayscale}"
+    "{@image|../data/stuff.jpg|image for converting to a grayscale}"
 };
 
 int main( int argc, const char** argv )
 {
     help();
     CommandLineParser parser(argc, argv, keys);
-    string inputImage = parser.get<string>("1");
+    string inputImage = parser.get<string>(0);
     img = imread(inputImage.c_str(), 0);
 
     if(img.empty())

@@ -20,17 +20,19 @@ import video
 
 if __name__ == '__main__':
     import sys
-    try: video_src = sys.argv[1]
-    except: video_src = 0
+    try:
+        video_src = sys.argv[1]
+    except:
+        video_src = 0
 
     cam = video.create_capture(video_src)
-    mser = cv2.MSER()
+    mser = cv2.MSER_create()
     while True:
         ret, img = cam.read()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         vis = img.copy()
 
-        regions = mser.detect(gray, None)
+        regions = mser.detectRegions(gray, None)
         hulls = [cv2.convexHull(p.reshape(-1, 1, 2)) for p in regions]
         cv2.polylines(vis, hulls, 1, (0, 255, 0))
 
