@@ -2,9 +2,9 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <OpenCV_Bin>$(OCVDIR310)\x64\vc12\bin\</OpenCV_Bin>
-    <OpenCV_Lib>$(OCVDIR310)\x64\vc12\lib\</OpenCV_Lib>
-    <OpenCV_Include>$(OCVDIR310)\include\</OpenCV_Include>
+    <OpenCV_Bin>$(OCVDIR)\310\build\x64\vc12\bin\</OpenCV_Bin>
+    <OpenCV_Lib>$(OCVDIR)\310\build\x64\vc12\lib\</OpenCV_Lib>
+    <OpenCV_Include>$(OCVDIR)\310\build\include\</OpenCV_Include>
     <!--debug suffix for OpenCV dlls and libs -->
     <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
     <DebugSuffix Condition="'$(Configuration)'!='Debug'"></DebugSuffix>
