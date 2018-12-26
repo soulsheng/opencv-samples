@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "facedetect", "projects\face
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "houghlines", "projects\houghlines.vcxproj", "{FB0853CE-405A-4502-893D-829B5733622F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjectTracking", "projects\ObjectTracking.vcxproj", "{3E8CE878-2276-4492-9D13-E22EA5CF0755}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +33,14 @@ Global
 		{FB0853CE-405A-4502-893D-829B5733622F}.Release|Win32.Build.0 = Release|Win32
 		{FB0853CE-405A-4502-893D-829B5733622F}.Release|x64.ActiveCfg = Release|x64
 		{FB0853CE-405A-4502-893D-829B5733622F}.Release|x64.Build.0 = Release|x64
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Debug|Win32.Build.0 = Debug|Win32
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Debug|x64.ActiveCfg = Debug|x64
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Debug|x64.Build.0 = Debug|x64
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|Win32.ActiveCfg = Release|Win32
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|Win32.Build.0 = Release|Win32
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|x64.ActiveCfg = Release|x64
+		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
