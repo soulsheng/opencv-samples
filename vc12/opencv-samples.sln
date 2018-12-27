@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "houghlines", "projects\houg
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjectTracking", "projects\ObjectTracking.vcxproj", "{3E8CE878-2276-4492-9D13-E22EA5CF0755}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "starter_video", "projects\starter_video.vcxproj", "{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +43,14 @@ Global
 		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|Win32.Build.0 = Release|Win32
 		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|x64.ActiveCfg = Release|x64
 		{3E8CE878-2276-4492-9D13-E22EA5CF0755}.Release|x64.Build.0 = Release|x64
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Debug|Win32.Build.0 = Debug|Win32
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Debug|x64.ActiveCfg = Debug|x64
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Debug|x64.Build.0 = Debug|x64
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Release|Win32.ActiveCfg = Release|Win32
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Release|Win32.Build.0 = Release|Win32
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Release|x64.ActiveCfg = Release|x64
+		{7D72EC1A-09BA-4201-8ED4-DF809EBBE2E2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
