@@ -16,7 +16,7 @@
     </ClCompile>
     <Link>
       <!--Add required OpenCV libs here-->
-      <AdditionalDependencies>opencv_world$(OpenCV_Version)$(DebugSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_world$(OpenCV_Version)$(DebugSuffix).lib;opencv_tracking$(OpenCV_Version)$(DebugSuffix).lib;opencv_datasets$(OpenCV_Version)$(DebugSuffix).lib;opencv_face$(OpenCV_Version)$(DebugSuffix).lib;opencv_text$(OpenCV_Version)$(DebugSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(OpenCV_Lib);%(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

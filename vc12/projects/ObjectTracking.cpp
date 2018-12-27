@@ -41,8 +41,12 @@ int main(int argc, char **argv)
             tracker = TrackerGOTURN::create();
     }
     #endif
+
+	string videofile;
+	if (argc = 2)
+		videofile = argv[1];
     // Read video
-    VideoCapture video("videos/chaplin.mp4");
+	VideoCapture video(videofile);
      
     // Exit if video is not opened
     if(!video.isOpened())
