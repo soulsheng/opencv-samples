@@ -11,7 +11,13 @@ using namespace std;
  
 int main(int argc, char **argv)
 {
-    // List of tracker types in OpenCV 3.2
+	// OpenCV 3.0.0 :		BOOSTING, MIL, TLD, MEDIANFLOW
+	// OpenCV 3.1.0 :		+	KCF
+	// OpenCV 3.2.0 :		+	GOTURN
+	// OpenCV 3.4.0 :		+	MOSSE
+	// OpenCV 3.4.5 :		+	CSRT
+
+	// List of tracker types in OpenCV 3.2
     // NOTE : GOTURN implementation is buggy and does not work.
     string trackerTypes[6] = {"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "GOTURN"};
     // vector <string> trackerTypes(types, std::end(types));
