@@ -16,8 +16,12 @@ int main(int argc, char **argv)
     string trackerTypes[6] = {"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "GOTURN"};
     // vector <string> trackerTypes(types, std::end(types));
  
+	int nTrackerType = 2;
+	if (argc >= 3)
+		nTrackerType = atoi(argv[2]);
+
     // Create a tracker
-    string trackerType = trackerTypes[2];
+	string trackerType = trackerTypes[nTrackerType];
  
     Ptr<Tracker> tracker;
  
@@ -43,7 +47,7 @@ int main(int argc, char **argv)
     #endif
 
 	string videofile;
-	if (argc = 2)
+	if (argc >= 2)
 		videofile = argv[1];
     // Read video
 	VideoCapture video(videofile);
