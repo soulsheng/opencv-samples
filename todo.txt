@@ -1,0 +1,6 @@
+tracking support more type by update ocv version greater than OR equal to 3.4.5
+tracking find right test data: clear, occlusion, reappear 
+tracking write result to new video
+tracking support images instead of video
+tracking add ui 
+
