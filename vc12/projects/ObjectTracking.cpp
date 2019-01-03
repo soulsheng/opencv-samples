@@ -77,9 +77,13 @@ int main(int argc, char **argv)
     // Uncomment the line below to select a different bounding box
     bbox = selectROI(frame, false);
  
+	cv::String title("目标跟踪系统v0.9-山仪所     ");
+	title += "跟踪模式：";
+	title += trackerType;
+
     // Display bounding box.
     rectangle(frame, bbox, Scalar( 255, 0, 0 ), 2, 1 );
-    imshow("Tracking", frame);
+	imshow(title, frame);
      
     tracker->init(frame, bbox);
      
@@ -106,13 +110,13 @@ int main(int argc, char **argv)
         }
          
         // Display tracker type on frame
-        putText(frame, trackerType + " Tracker", Point(100,20), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50),2);
-         
+        //putText(frame, trackerType + " Tracker", Point(100,20), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50),2);
+
         // Display FPS on frame
-        putText(frame, "FPS : " + SSTR(int(fps)), Point(100,50), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50), 2);
- 
+        //putText(frame, "FPS : " + SSTR(int(fps)), Point(100,50), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50), 2);
+
         // Display frame.
-        imshow("Tracking", frame);
+		imshow(title, frame);
          
         // Exit if ESC pressed.
         int k = waitKey(1);
