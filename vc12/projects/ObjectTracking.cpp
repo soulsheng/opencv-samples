@@ -56,21 +56,36 @@ int main(int argc, char **argv)
 	string videofile;
 	if (argc >= 2)
 		videofile = argv[1];
-    // Read video
-	VideoCapture video(videofile);
-     
-    // Exit if video is not opened
-    if(!video.isOpened())
-    {
-        cout << "Could not read video file" << endl;
-        return 1;
-         
-    }
-     
+
+	bool bVideoOrImages = true;	//a video file or a path of images
+	if( string::npos == videofile.find_last_of('.') )
+		bVideoOrImages = false;
+
+	VideoCapture video;
+	if (bVideoOrImages)
+	{
+		// Read video
+		video.open(videofile);
+
+        // Exit if video is not opened
+        if (!video.isOpened())
+        {
+            cout << "Could not read video file" << endl;
+            return 1;
+        
+        }
+	}
+
     // Read first frame
     Mat frame;
-    bool ok = video.read(frame);
-     
+	if (bVideoOrImages)
+		bool ok = video.read(frame);
+	else
+	{
+		string videofile0 = videofile + "0001.jpg";
+		frame = imread(videofile0);
+	}
+
     // Define initial boundibg box
     Rect2d bbox(287, 23, 86, 320);
      
@@ -87,8 +102,18 @@ int main(int argc, char **argv)
      
     tracker->init(frame, bbox);
      
-    while(video.read(frame))
+	int indexFile = 1;
+	std::ostringstream os;
+    while(!frame.empty())
     {    
+		os.str("");
+		os << videofile << std::setw(4) << std::setfill('0') << ++indexFile << ".jpg";
+
+		if (bVideoOrImages)
+			video.read(frame);
+		else
+			frame = imread(os.str());
+
         // Start timer
         double timer = (double)getTickCount();
          
