@@ -76,14 +76,20 @@ int main(int argc, char **argv)
         }
 	}
 
+	int baseIndex = 1;
+	if (argc >= 4)
+		baseIndex = atoi(argv[3]);
+
+	std::ostringstream os;
+
     // Read first frame
     Mat frame;
 	if (bVideoOrImages)
 		bool ok = video.read(frame);
 	else
 	{
-		string videofile0 = videofile + "0001.jpg";
-		frame = imread(videofile0);
+		os << videofile << std::setw(4) << std::setfill('0') << baseIndex << ".jpg";
+		frame = imread(os.str());
 	}
 
     // Define initial boundibg box
@@ -102,12 +108,10 @@ int main(int argc, char **argv)
      
     tracker->init(frame, bbox);
      
-	int indexFile = 1;
-	std::ostringstream os;
     while(!frame.empty())
     {    
 		os.str("");
-		os << videofile << std::setw(4) << std::setfill('0') << ++indexFile << ".jpg";
+		os << videofile << std::setw(4) << std::setfill('0') << ++baseIndex << ".jpg";
 
 		if (bVideoOrImages)
 			video.read(frame);
