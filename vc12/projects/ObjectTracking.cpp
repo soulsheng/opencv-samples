@@ -92,6 +92,12 @@ int main(int argc, char **argv)
 		frame = imread(os.str());
 	}
 
+	if (frame.empty())
+	{
+		cout << "Could not read frame" << endl;
+		return 1;
+	}
+
     // Define initial boundibg box
     Rect2d bbox(287, 23, 86, 320);
      
@@ -108,7 +114,7 @@ int main(int argc, char **argv)
      
     tracker->init(frame, bbox);
      
-    while(!frame.empty())
+    while(1)
     {    
 		os.str("");
 		os << videofile << std::setw(4) << std::setfill('0') << ++baseIndex << ".jpg";
@@ -117,6 +123,12 @@ int main(int argc, char **argv)
 			video.read(frame);
 		else
 			frame = imread(os.str());
+
+		if (frame.empty())
+		{
+			cout << "finish tracking" << endl;
+			break;;
+		}
 
         // Start timer
         double timer = (double)getTickCount();
