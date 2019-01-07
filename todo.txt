@@ -3,5 +3,7 @@ tracking find right test data: clear, occlusion, reappear
 tracking write result to new video
 tracking support images instead of video, ok
 tracking add ui 
-tracking find proper data sample
 
+tracking find proper data sample : 
+TB100/Basketball, fix occlusion problem , type MIL
+TB100/BlurCar4, BlurOwl, miss in some frame then can be found again , type KCF
