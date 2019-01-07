@@ -9,7 +9,7 @@ using namespace std;
 #define SSTR( x ) static_cast< std::ostringstream & >( \
 ( std::ostringstream() << std::dec << x ) ).str()
  
-int main(int argc, char **argv)
+Ptr<Tracker> createTracker(int nTrackerType, string& trackerType)
 {
 	// OpenCV 3.0.0 :		BOOSTING, MIL, TLD, MEDIANFLOW
 	// OpenCV 3.1.0 :		+	KCF
@@ -18,40 +18,46 @@ int main(int argc, char **argv)
 	// OpenCV 3.4.5 :		+	CSRT
 
 	// List of tracker types in OpenCV 3.2
-    // NOTE : GOTURN implementation is buggy and does not work.
-    string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD","MEDIANFLOW", "GOTURN",
-	"MOSSE", "CSRT"};
-    // vector <string> trackerTypes(types, std::end(types));
- 
+	// NOTE : GOTURN implementation is buggy and does not work.
+	string trackerTypes[8] = { "BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW", "GOTURN",
+		"MOSSE", "CSRT" };
+	// vector <string> trackerTypes(types, std::end(types));
+
+	// Create a tracker
+	trackerType = trackerTypes[nTrackerType];
+
+	Ptr<Tracker> tracker;
+
+#if (CV_MINOR_VERSION < 3)
+	{
+		tracker = Tracker::create(trackerType);
+	}
+#else
+	{
+		if (trackerType == "BOOSTING")
+			tracker = TrackerBoosting::create();
+		if (trackerType == "MIL")
+			tracker = TrackerMIL::create();
+		if (trackerType == "KCF")
+			tracker = TrackerKCF::create();
+		if (trackerType == "TLD")
+			tracker = TrackerTLD::create();
+		if (trackerType == "MEDIANFLOW")
+			tracker = TrackerMedianFlow::create();
+		if (trackerType == "GOTURN")
+			tracker = TrackerGOTURN::create();
+	}
+#endif
+
+	return tracker;
+}
+
+int main(int argc, char **argv)
+{
+
 	int nTrackerType = 2;
 	if (argc >= 3)
 		nTrackerType = atoi(argv[2]);
-
-    // Create a tracker
-	string trackerType = trackerTypes[nTrackerType];
- 
-    Ptr<Tracker> tracker;
- 
-    #if (CV_MINOR_VERSION < 3)
-    {
-        tracker = Tracker::create(trackerType);
-    }
-    #else
-    {
-        if (trackerType == "BOOSTING")
-            tracker = TrackerBoosting::create();
-        if (trackerType == "MIL")
-            tracker = TrackerMIL::create();
-        if (trackerType == "KCF")
-            tracker = TrackerKCF::create();
-        if (trackerType == "TLD")
-            tracker = TrackerTLD::create();
-        if (trackerType == "MEDIANFLOW")
-            tracker = TrackerMedianFlow::create();
-        if (trackerType == "GOTURN")
-            tracker = TrackerGOTURN::create();
-    }
-    #endif
 
 	string videofile;
 	if (argc >= 2)
@@ -106,20 +112,21 @@ int main(int argc, char **argv)
 		return 0;
 
 
-	cv::String title("目标跟踪系统v0.9-山仪所     ");
-	title += "跟踪模式：";
-	title += trackerType;
-
 	MultiTracker trackers;
 	vector<Rect2d> obj;
 	vector<Ptr<Tracker>> algorithms;
 
+	string trackerType;
 	for (auto i = 0; i < rois.size(); i++) {
 		obj.push_back(rois[i]);
-		algorithms.push_back(TrackerKCF::create());
+		algorithms.push_back(createTracker(nTrackerType, trackerType));
 	}
 	trackers.add(algorithms, frame, obj);
 	
+
+	cv::String title("目标跟踪系统v0.9-山仪所     ");
+	title += "跟踪模式：";
+	title += trackerType;
 
     while(1)
     {    
