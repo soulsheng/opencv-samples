@@ -151,7 +151,7 @@ int main(int argc, char **argv)
 		else
 		{
 			// Tracking failure detected.
-			putText(frame, "Tracking failure detected", Point(100,80), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(0,0,255),2);
+			putText(frame, "Tracking failure detected", Point(50,40), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,255),1);
 		}
 		
 
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 		float fps = getTickFrequency() / ((double)getTickCount() - timer);
 
         // Display FPS on frame
-        putText(frame, "FPS : " + SSTR(int(fps)), Point(100,50), FONT_HERSHEY_SIMPLEX, 0.75, Scalar(50,170,50), 2);
+        putText(frame, "FPS : " + SSTR(int(fps)), Point(50,25), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(50,170,50), 1);
 
         // Display frame.
 		imshow(title, frame);
