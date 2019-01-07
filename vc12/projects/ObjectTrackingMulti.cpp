@@ -128,6 +128,26 @@ int main(int argc, char **argv)
 	title += "¸ú×ÙÄ£Ê½£º";
 	title += trackerType;
 
+
+	string videofileOut("D:\\out.avi");
+	if (argc >= 5)
+		videofileOut = argv[4];
+
+	string videoFormat("XVID");
+	if (argc >= 6)
+		videoFormat = argv[5];
+
+
+	// ready to write result to video file
+	VideoWriter out;
+	out.open(videofileOut, CV_FOURCC(videoFormat.at(0), videoFormat.at(1), videoFormat.at(2), videoFormat.at(3)), 15,
+		Size(frame.cols, frame.rows));
+
+	if (!out.isOpened())
+	{
+		cout << "Could not create video file" << endl;
+	}
+
     while(1)
     {    
 		os.str("");
@@ -173,7 +193,9 @@ int main(int argc, char **argv)
 
         // Display frame.
 		imshow(title, frame);
-         
+		
+		out << frame;
+
         // Exit if ESC pressed.
         int k = waitKey(1);
         if(k == 27)
