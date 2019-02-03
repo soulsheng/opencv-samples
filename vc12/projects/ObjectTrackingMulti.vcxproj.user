@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>G:\file\data\dnn\TB100\Basketball\img\ 1 1 d:\0.avi XVID</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>G:\file\data\dnn\TB100\Basketball\img\ 1 1 d:\0.avi H264</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
