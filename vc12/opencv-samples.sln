@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ssd_object_detection", "pro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dnn_object_detection", "projects\dnn_object_detection.vcxproj", "{83A353AB-2DFC-4AA9-9163-F84DD986B622}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "videowriter_basic", "projects\videowriter_basic.vcxproj", "{4FFB7E0F-1F53-4882-9424-0E5965501DD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -61,6 +63,14 @@ Global
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|Win32.Build.0 = Release|Win32
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|x64.ActiveCfg = Release|x64
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|x64.Build.0 = Release|x64
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Debug|Win32.Build.0 = Debug|Win32
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Debug|x64.ActiveCfg = Debug|x64
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Debug|x64.Build.0 = Debug|x64
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Release|Win32.ActiveCfg = Release|Win32
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Release|Win32.Build.0 = Release|Win32
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Release|x64.ActiveCfg = Release|x64
+		{4FFB7E0F-1F53-4882-9424-0E5965501DD5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

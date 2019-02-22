@@ -18,7 +18,7 @@ int main(int, char**)
 {
     Mat src;
     // use default camera as video source
-    VideoCapture cap(0);
+    VideoCapture cap("..\\..\\\\samples\\data\\768x576.avi");
     // check if we succeeded
     if (!cap.isOpened()) {
         cerr << "ERROR! Unable to open camera\n";
