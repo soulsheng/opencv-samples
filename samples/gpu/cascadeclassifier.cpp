@@ -13,6 +13,8 @@
 #include "opencv2/cudaimgproc.hpp"
 #include "opencv2/cudawarping.hpp"
 
+#include "CVideoWriter.h"
+
 using namespace std;
 using namespace cv;
 using namespace cv::cuda;
@@ -20,7 +22,7 @@ using namespace cv::cuda;
 
 static void help()
 {
-    cout << "Usage: ./cascadeclassifier \n\t--cascade <cascade_file>\n\t(<image>|--video <video>|--camera <camera_id>)\n"
+    cout << "Usage: ./cascadeclassifier \n\t--cascade <cascade_file>\n\t(<image>|--video <video>|--camera <camera_id> --show <0|1> --write <0|1> )\n"
             "Using OpenCV version " << CV_VERSION << endl << endl;
 }
 
@@ -132,6 +134,14 @@ static void displayState(Mat &canvas, bool bHelp, bool bGpu, bool bLargestFace, 
     }
 }
 
+std::string MakeFourCCString(uint32_t x) {
+	std::string str;
+	str += x >> 24;
+	str += (x >> 16) & 0xff;
+	str += (x >> 8) & 0xff;
+	str += x & 0xff;
+	return str;
+}
 
 int main(int argc, const char *argv[])
 {
@@ -153,7 +163,11 @@ int main(int argc, const char *argv[])
     bool isInputImage = false;
     bool isInputVideo = false;
     bool isInputCamera = false;
+	bool isShow = true;
+	bool isWrite = true;
+	float rate = 0.0;
 
+	std::string tmpStr;
     for (int i = 1; i < argc; ++i)
     {
         if (string(argv[i]) == "--cascade")
@@ -173,6 +187,21 @@ int main(int argc, const char *argv[])
             help();
             return -1;
         }
+		else if (string(argv[i]) == "--show")
+		{
+			tmpStr = argv[++i];
+			isShow = atoi(tmpStr.c_str());
+		}
+		else if (string(argv[i]) == "--write")
+		{
+			tmpStr = argv[++i];
+			isWrite = atoi(tmpStr.c_str());
+		}
+		else if (string(argv[i]) == "--rate")
+		{
+			tmpStr = argv[++i];
+			rate = atof(tmpStr.c_str());
+		}
         else if (!isInputImage)
         {
             inputName = argv[i];
@@ -184,6 +213,8 @@ int main(int argc, const char *argv[])
             return -1;
         }
     }
+
+	cout << "isWrite = " << isWrite << ", isShow = " << isShow << ", rate = " << rate << endl;
 
     Ptr<cuda::CascadeClassifier> cascade_gpu = cuda::CascadeClassifier::create(cascadeName);
 
@@ -212,7 +243,8 @@ int main(int argc, const char *argv[])
         CV_Assert(capture.isOpened());
     }
 
-    namedWindow("result", 1);
+	if (isShow)
+		namedWindow("result", 1);
 
     Mat frame, frame_cpu, gray_cpu, resized_cpu, frameDisp;
     vector<Rect> faces;
@@ -226,7 +258,16 @@ int main(int argc, const char *argv[])
     bool filterRects = true;
     bool helpScreen = false;
 
-    for (;;)
+	// ready to write result video
+	int frame_num = capture.get(cv::CAP_PROP_FRAME_COUNT);
+	CVideoWriter videoWriter;
+	bool bRet = videoWriter.writeVideoBegin(inputName + "_detect.mp4",
+		capture.get(CV_CAP_PROP_FRAME_WIDTH), capture.get(CV_CAP_PROP_FRAME_HEIGHT), rate,
+		capture.get(CAP_PROP_FPS), capture.get(CAP_PROP_FOURCC));
+
+	cout << "FOURCC = " << MakeFourCCString((unsigned int)capture.get(CAP_PROP_FOURCC)) << endl;
+
+    for (int i=0;i<frame_num;i++)
     {
         if (isInputCamera || isInputVideo)
         {
@@ -269,7 +310,7 @@ int main(int argc, const char *argv[])
 
         for (size_t i = 0; i < faces.size(); ++i)
         {
-			rectangle(frameDisp, faces[i], Scalar(0, 0, 255));
+			rectangle(frameDisp, faces[i], Scalar(0, 255, 0), 2);
         }
 
         tm.stop();
@@ -293,7 +334,10 @@ int main(int argc, const char *argv[])
 
         //cv::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
         displayState(frameDisp, helpScreen, useGPU, findLargestObject, filterRects, fps);
-        imshow("result", frameDisp);
+		if (isShow)
+			imshow("result", frameDisp);
+		if (isWrite)
+			videoWriter.writeVideoKernel(frameDisp);
 
         char key = (char)waitKey(5);
         if (key == 27)
@@ -327,6 +371,8 @@ int main(int argc, const char *argv[])
             break;
         }
     }
+
+	videoWriter.writeVideoEnd();
 
     return 0;
 }
