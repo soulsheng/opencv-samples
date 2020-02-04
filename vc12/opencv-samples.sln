@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjectTracking", "projects\ObjectTracking.vcxproj", "{3E8CE878-2276-4492-9D13-E22EA5CF0755}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ssd_object_detection", "projects\ssd_object_detection.vcxproj", "{CB9743F9-0A72-40ED-9233-6B88E1ECF6A4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dnn_object_detection", "projects\dnn_object_detection.vcxproj", "{83A353AB-2DFC-4AA9-9163-F84DD986B622}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cascadeclassifier", "projects\cascadeclassifier.vcxproj", "{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FaceDetect", "projects\FaceDetect.vcxproj", "{D40A9EF8-8076-4356-A87B-DE617D5803DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +65,22 @@ Global
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|Win32.Build.0 = Release|Win32
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|x64.ActiveCfg = Release|x64
 		{83A353AB-2DFC-4AA9-9163-F84DD986B622}.Release|x64.Build.0 = Release|x64
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Debug|Win32.Build.0 = Debug|Win32
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Debug|x64.ActiveCfg = Debug|x64
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Debug|x64.Build.0 = Debug|x64
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Release|Win32.ActiveCfg = Release|Win32
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Release|Win32.Build.0 = Release|Win32
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Release|x64.ActiveCfg = Release|x64
+		{A95CC26B-30A1-44FD-88A8-B3CB31B0966C}.Release|x64.Build.0 = Release|x64
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Debug|Win32.Build.0 = Debug|Win32
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Debug|x64.ActiveCfg = Debug|x64
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Debug|x64.Build.0 = Debug|x64
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Release|Win32.ActiveCfg = Release|Win32
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Release|Win32.Build.0 = Release|Win32
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Release|x64.ActiveCfg = Release|x64
+		{D40A9EF8-8076-4356-A87B-DE617D5803DE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

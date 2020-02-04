@@ -7,8 +7,8 @@
     <OpenCV_Lib>$(OCVDIR)\$(OpenCV_Version)\build\x64\vc12\lib\</OpenCV_Lib>
     <OpenCV_Include>$(OCVDIR)\$(OpenCV_Version)\build\include\</OpenCV_Include>
     <!--debug suffix for OpenCV dlls and libs -->
-    <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
-    <DebugSuffix Condition="'$(Configuration)'!='Debug'"></DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'=='Debug'">gd</DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'!='Debug'">g</DebugSuffix>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>

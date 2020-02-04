@@ -48,6 +48,20 @@ static void convertAndResize(const Mat& src, Mat& gray, Mat& resized, double sca
     }
 }
 
+static void onlyResize(const Mat& src, Mat& resized, double scale)
+{
+	Size sz(cvRound(src.cols * scale), cvRound(src.rows * scale));
+
+	if (scale != 1)
+	{
+		cv::resize(src, resized, sz);
+	}
+	else
+	{
+		resized = src;
+	}
+}
+
 static void convertAndResize(const GpuMat& src, GpuMat& gray, GpuMat& resized, double scale)
 {
     if (src.channels() == 3)
@@ -251,9 +265,11 @@ int main(int argc, const char *argv[])
                                          minSize);
         }
 
+		onlyResize(frame_cpu, frameDisp, scaleFactor);
+
         for (size_t i = 0; i < faces.size(); ++i)
         {
-            rectangle(resized_cpu, faces[i], Scalar(255));
+			rectangle(frameDisp, faces[i], Scalar(0, 0, 255));
         }
 
         tm.stop();
@@ -275,7 +291,7 @@ int main(int argc, const char *argv[])
         }
         cout << endl;
 
-        cv::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
+        //cv::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
         displayState(frameDisp, helpScreen, useGPU, findLargestObject, filterRects, fps);
         imshow("result", frameDisp);
 
