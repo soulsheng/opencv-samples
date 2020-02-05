@@ -112,6 +112,7 @@ static void displayState(Mat &canvas, bool bHelp, bool bGpu, bool bLargestFace, 
     ss << "FPS = " << setprecision(1) << fixed << fps;
     matPrint(canvas, 0, fontColorRed, ss.str());
     ss.str("");
+#if 0
     ss << "[" << canvas.cols << "x" << canvas.rows << "], " <<
         (bGpu ? "GPU, " : "CPU, ") <<
         (bLargestFace ? "OneFace, " : "MultiFace, ") <<
@@ -132,6 +133,7 @@ static void displayState(Mat &canvas, bool bHelp, bool bGpu, bool bLargestFace, 
     {
         matPrint(canvas, 2, fontColorNV, "H - toggle hotkeys help");
     }
+#endif
 }
 
 std::string MakeFourCCString(uint32_t x) {
@@ -141,6 +143,55 @@ std::string MakeFourCCString(uint32_t x) {
 	str += (x >> 8) & 0xff;
 	str += x & 0xff;
 	return str;
+}
+
+void rectangleCorner(Mat& img, Rect rec,
+	const Scalar& color, int thickness = 1)
+{
+	float ratio = 0.2f;
+	float lineWidth = ratio * rec.width;
+	float lineHeight = ratio * rec.height;
+	cv::Point pLeftTop = rec.tl();
+	cv::Point pRightBottom = rec.br();
+
+	cv::Point pStart, pOffset;
+
+	// left top  |~
+	pStart = pLeftTop;
+
+	pOffset = cvPoint(0, lineHeight);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	pOffset = cvPoint(lineWidth, 0);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	// left bottom |_
+	pStart = pLeftTop + cv::Point(0, rec.height);
+
+	pOffset = cvPoint(0, -lineHeight);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	pOffset = cvPoint(lineWidth, 0);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	// right top  ~|
+	pStart = pLeftTop + cv::Point(rec.width, 0);
+
+	pOffset = cvPoint(0, lineHeight);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	pOffset = cvPoint(-lineWidth, 0);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	// right top  _|
+	pStart = pRightBottom;
+
+	pOffset = cvPoint(0, -lineHeight);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
+	pOffset = cvPoint(-lineWidth, 0);
+	cv::line(img, pStart, pStart + pOffset, color, thickness);
+
 }
 
 int main(int argc, const char *argv[])
@@ -267,7 +318,7 @@ int main(int argc, const char *argv[])
 
 	cout << "FOURCC = " << MakeFourCCString((unsigned int)capture.get(CAP_PROP_FOURCC)) << endl;
 
-    for (int i=0;i<frame_num;i++)
+	for (int iFrame = 0; iFrame<frame_num; iFrame++)
     {
         if (isInputCamera || isInputVideo)
         {
@@ -310,7 +361,25 @@ int main(int argc, const char *argv[])
 
         for (size_t i = 0; i < faces.size(); ++i)
         {
-			rectangle(frameDisp, faces[i], Scalar(0, 255, 0), 2);
+			rectangleCorner(frameDisp, faces[i], Scalar(0, 255, 0), 2);
+
+			int fontFace = FONT_HERSHEY_DUPLEX;
+			double fontScale = 0.8;
+			int fontThickness = 2;
+			double t = 36.8 + i*0.2;
+			Scalar fontColorRed = Scalar(255, 255, 0);
+
+			if ( t > 37.3 )
+				fontColorRed = Scalar(0, 255, 255);
+
+			ostringstream ss;
+			ss << setprecision(1) << fixed << t;// << "¡ãC";
+
+			cv::Point posTemp( faces[i].tl() );
+			cv::Point offset(-10, -10);//cv::Point offset = cv::Point(faces[i].height * 0.4, -faces[i].height * 0.1);
+
+			putText(frameDisp, ss.str().c_str(), posTemp + offset,
+				fontFace, fontScale, fontColorRed, 1, 16);
         }
 
         tm.stop();
@@ -331,7 +400,7 @@ int main(int argc, const char *argv[])
             }
         }
         cout << endl;
-
+		cout << "frame " << iFrame << " / " << frame_num << ", ";
         //cv::cvtColor(resized_cpu, frameDisp, COLOR_GRAY2BGR);
         displayState(frameDisp, helpScreen, useGPU, findLargestObject, filterRects, fps);
 		if (isShow)
