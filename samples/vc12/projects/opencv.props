@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros">
     <OCVDIR>D:\soft\opencv\opencv-2410\opencv\build\</OCVDIR>
     <OpenCV_Version>2410</OpenCV_Version>
-    <OpenCV_Lib>$(OCVDIR)\x86\vc12\lib\</OpenCV_Lib>
+    <OpenCV_Lib>$(OCVDIR)\$(Platform)\vc12\lib\</OpenCV_Lib>
     <OpenCV_Include>$(OCVDIR)\include\</OpenCV_Include>
     <!--debug suffix for OpenCV dlls and libs -->
     <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
