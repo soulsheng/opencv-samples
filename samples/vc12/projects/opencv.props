@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <OCVDIR>D:\soft\opencv\opencv-2410\opencv\build\</OCVDIR>
+    <OpenCV_Version>2410</OpenCV_Version>
+    <OpenCV_Lib>$(OCVDIR)\x86\vc12\lib\</OpenCV_Lib>
+    <OpenCV_Include>$(OCVDIR)\include\</OpenCV_Include>
+    <!--debug suffix for OpenCV dlls and libs -->
+    <DebugSuffix Condition="'$(Configuration)'=='Debug'">d</DebugSuffix>
+    <DebugSuffix Condition="'$(Configuration)'!='Debug'"></DebugSuffix>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(OpenCV_Include);%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <!--Add required OpenCV libs here-->
+      <AdditionalDependencies>opencv_core$(OpenCV_Version)$(DebugSuffix).lib;opencv_imgproc$(OpenCV_Version)$(DebugSuffix).lib;opencv_highgui$(OpenCV_Version)$(DebugSuffix).lib;opencv_video$(OpenCV_Version)$(DebugSuffix).lib;opencv_objdetect$(OpenCV_Version)$(DebugSuffix).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OpenCV_Lib);%(AdditionalLibraryDirectories);</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+</Project>
